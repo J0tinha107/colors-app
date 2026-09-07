@@ -1,0 +1,62 @@
+{%- assign color_option = null -%}
+{%- for option in product.options_with_values -%}
+  {%- if option.name == 'Cor' or option.name == 'Color' -%}
+    {%- assign color_option = option -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if color_option -%}
+  <div class="color-swatches" data-product-id="{{ product.id }}">
+    {%- for code in color_option.values -%}
+      {%- assign color_metaobject = null -%}
+      {%- for color in shop.metaobjects.color.values -%}
+        {%- if color.code == code or color.name == code -%}
+          {%- assign color_metaobject = color -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- assign matched_variant = null -%}
+      {%- assign color_option_index = color_option.position | minus: 1 -%}
+      {%- for variant in product.variants -%}
+        {%- if variant.options[color_option_index] == code -%}
+          {%- assign matched_variant = variant -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- assign swatch_image = matched_variant.featured_image | default: product.featured_image -%}
+      {%- assign pattern_image = color_metaobject.pattern.value -%}
+
+      <button
+        type="button"
+        class="color-swatch{% if forloop.first %} is-active{% endif %}"
+        data-image="{{ swatch_image | image_url: width: 1200 }}"
+        data-variant-id="{{ matched_variant.id }}"
+        aria-label="{% if color_metaobject %}{{ color_metaobject.name }}{% else %}{{ code }}{% endif %}"
+        style="
+          {%- if pattern_image != blank -%}
+            background-image: url('{{ pattern_image | image_url: width: 100 | escape }}');
+            background-size: cover;
+            background-position: center;
+          {%- elsif color_metaobject.swatch_color != blank -%}
+            background-color: {{ color_metaobject.swatch_color }};
+          {%- else -%}
+            background-color: #cccccc;
+          {%- endif -%}
+        "
+      ></button>
+    {%- endfor -%}
+  </div>
+
+  {{ 'color-swatches.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'color-swatches.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Color swatches",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}

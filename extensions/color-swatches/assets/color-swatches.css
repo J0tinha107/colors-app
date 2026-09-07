@@ -1,0 +1,22 @@
+.color-swatches {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background-color: #ccc;
+  background-position: center;
+  border-color: #ccc;
+}
+
+.color-swatch.is-active,
+.color-swatch:hover {
+  border-color: #111;
+}
